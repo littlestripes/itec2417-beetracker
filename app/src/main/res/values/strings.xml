@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BeeTrackerRough</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="get_location">Get Location</string>
+    <string name="submit">Submit</string>
+    <string name="hint">0</string>
+    <string name="how_many_bees_did_you_see">How many bees did you see?</string>
+    <string name="image_view">image view</string>
+    <string name="increase">increase</string>
+    <string name="decrease">decrease</string>
+</resources>
