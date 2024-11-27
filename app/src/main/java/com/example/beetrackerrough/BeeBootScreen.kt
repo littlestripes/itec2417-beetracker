@@ -28,7 +28,7 @@ class BeeBootScreen : Fragment() {
 
         submitButton.setOnClickListener {
             //val fragment = BeeSightingUserInput()
-            parentFragmentManager.beginTransaction().replace(R.id.bee_fragment_container, BeeSightingUserInput.newInstance(), "BEEUSERINPUT").addToBackStack("Beeuserinput").commit()
+            parentFragmentManager.beginTransaction().replace(R.id.bee_fragment_container, BeeSightingUserInput.newInstance(0.0, 0.0), "BEEUSERINPUT").addToBackStack("Beeuserinput").commit()
 
         }
         return view

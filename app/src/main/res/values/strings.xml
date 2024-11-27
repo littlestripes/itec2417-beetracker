@@ -12,4 +12,5 @@
     <string name="no_location">"No location available "</string>
     <string name="give_permission">"You'll need to grant location permission to add bees "</string>
     <string name="bee_sighting_added">Bee sighting added to database! Thank you for your support! </string>
+    <string name="click_the_box_after_setting_location">Click the box after setting location!</string>
 </resources>
