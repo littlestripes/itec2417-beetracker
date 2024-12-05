@@ -149,7 +149,7 @@ class BeeSightingUserInput : Fragment() {
     private fun createImageFile(): Pair<File?, String?> {
         return try {
             val dateTime = SimpleDateFormat("yyyMMdd__HHmmss").format(Date())
-            imageFilename = "COLLAGE_$dateTime"
+            imageFilename = "SIGHTING_$dateTime"
             val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             val file = File.createTempFile(imageFilename.toString(), ".jpg", storageDir)
             Log.d(TAG, "Image file created $imageFilename.jpg")
