@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.GeoPoint
 import java.util.Date
@@ -35,10 +34,6 @@ import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Date
-
-
-const val TAG = "BeeSightingUserInputFragment"
 
 private const val TAG = "BEE_SIGHTING_USER_INPUT_FRAGMENT"
 private const val LAT = "latitude"
@@ -92,8 +87,6 @@ class BeeSightingUserInput : Fragment() {
 
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -105,11 +98,6 @@ class BeeSightingUserInput : Fragment() {
         val userLocationLat: Double = requireArguments().getDouble(LAT)
         val userlocationLong: Double = requireArguments().getDouble(LONG)
         val newUserLocation: GeoPoint = GeoPoint(userLocationLat, userlocationLong)
-
-
-
-
-
 
         increaseButton = view.findViewById(R.id.increaseButton)
         decreaseButton = view.findViewById(R.id.decreaseButton)
@@ -148,7 +136,6 @@ class BeeSightingUserInput : Fragment() {
             parentFragmentManager.beginTransaction().replace(R.id.bee_fragment_container, GetLocation.newInstance(), "GETLOCATION").commit()
 
         }
-
 
 
     // holding code to be replaced with send data to view model - linked to repository - upload to database
