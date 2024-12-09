@@ -2,9 +2,7 @@ package com.example.beetrackerrough
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,11 +22,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.GeoPoint
-import java.util.Timer
-import java.util.UUID
-import java.util.UUID.randomUUID
-import kotlin.concurrent.schedule
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -111,7 +104,6 @@ class GetLocation : Fragment() {
     }
 
     private fun requestLocationPermission() {
-        //if (isAdded()) {
         if (ContextCompat.checkSelfPermission(
                 requireActivity(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -146,7 +138,7 @@ class GetLocation : Fragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun addLocation() {
+    private fun addLocation(onComplete: () -> Unit) {
         if (map == null) { return }
         if (fusedLocationProvider == null) { return }
         if (!locationPermissionGranted) {
@@ -161,20 +153,10 @@ class GetLocation : Fragment() {
                 longitude = location.longitude
 
                 Toast.makeText(context, "Latitude $latitude, Longitude: $longitude", Toast.LENGTH_LONG).show()
-
             }
+            onComplete()
         }
     }
-
-    /*private fun geopointLatitude(): Double?  {
-        val latitude= userLocationGeoPoint?.latitude
-        return  latitude
-    }
-
-    private fun geopointLongitude(): Double? {
-        val longitude = userLocationGeoPoint?.longitude
-        return longitude
-    }*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -193,8 +175,8 @@ class GetLocation : Fragment() {
 
         setLocationButton.setOnClickListener {
             moveMapToUserLocation()
-            addLocation()
-            Timer().schedule(3000) {
+            addLocation() {
+            //Timer().schedule(3000) {
                 parentFragmentManager.beginTransaction().replace(
                     R.id.bee_fragment_container,
                     BeeSightingUserInput.newInstance(latitude!!, longitude!!),
@@ -202,8 +184,6 @@ class GetLocation : Fragment() {
                 ).commit()
             }
         }
-
-
 
         // Inflate the layout for this fragment
         return view
