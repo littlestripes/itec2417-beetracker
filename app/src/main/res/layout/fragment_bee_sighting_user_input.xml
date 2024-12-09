@@ -55,6 +55,13 @@
         app:layout_constraintTop_toBottomOf="@+id/increaseButton" />
 
     <ImageButton
+
+        android:id="@+id/imageButton"
+        android:layout_width="255dp"
+        android:layout_height="195dp"
+        android:layout_marginTop="40dp"
+        android:contentDescription="@string/image_view"
+        app:srcCompat="@drawable/ic_action_camera"
         android:id="@+id/cameraButton"
         android:layout_width="205dp"
         android:layout_height="165dp"
@@ -66,12 +73,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/getUserLocationButton" />
 
+
     <Button
         android:id="@+id/getUserLocationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="40dp"
         android:layout_marginTop="60dp"
+        android:drawableEnd="@drawable/ic_action_location"
         android:text="@string/get_location"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -86,12 +95,15 @@
         android:layout_height="wrap_content"
         android:layout_margin="40dp"
         android:layout_marginTop="40dp"
+        android:drawableEnd="@drawable/ic_action_clouddone"
         android:text="@string/submit"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
         app:layout_constraintTop_toBottomOf="@+id/cameraButton" />
+
 
     <EditText
         android:id="@+id/beeNumber"
