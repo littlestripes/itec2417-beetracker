@@ -9,4 +9,5 @@
     <string name="image_view">image view</string>
     <string name="increase">increase</string>
     <string name="decrease">decrease</string>
+    <string name="camera_button">Camera button</string>
 </resources>

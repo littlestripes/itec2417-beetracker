@@ -54,13 +54,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/increaseButton" />
 
-    <ImageView
-        android:id="@+id/imageView3"
+    <ImageButton
+        android:id="@+id/cameraButton"
         android:layout_width="205dp"
         android:layout_height="165dp"
         android:layout_marginTop="40dp"
-        android:contentDescription="@string/image_view"
-        android:src="@android:drawable/screen_background_light"
+        android:contentDescription="@string/camera_button"
+        android:src="@android:drawable/ic_menu_camera"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +91,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/cameraButton" />
 
     <EditText
         android:id="@+id/beeNumber"
