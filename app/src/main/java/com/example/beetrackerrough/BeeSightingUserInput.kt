@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -25,7 +26,10 @@ import kotlin.concurrent.schedule
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
@@ -34,6 +38,12 @@ import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
+import android.Manifest
+import android.os.Looper
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority
 
 private const val TAG = "BEE_SIGHTING_USER_INPUT_FRAGMENT"
 private const val LAT = "latitude"
@@ -46,7 +56,6 @@ private const val LONG = "longitude"
  */
 class BeeSightingUserInput : Fragment() {
     private var userLocation: GeoPoint? = null
-
 
     private var beeUserSightingNumInput: Int = 0
 
@@ -79,13 +88,11 @@ class BeeSightingUserInput : Fragment() {
         ViewModelProvider(requireActivity()).get(BeeViewModel::class.java)
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     //private val beeMarkers = mutableListOf<Marker>()
 
     //private var beeList: listOf<Bee>()
-
-    private fun toGeoPoint(userLocationLat: Double, userlocationLong: Double) {
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,10 +101,6 @@ class BeeSightingUserInput : Fragment() {
         // Inflate the layout for this fragment
 
         val view = inflater.inflate(R.layout.fragment_bee_sighting_user_input, container, false)
-
-        val userLocationLat: Double = requireArguments().getDouble(LAT)
-        val userlocationLong: Double = requireArguments().getDouble(LONG)
-        val newUserLocation: GeoPoint = GeoPoint(userLocationLat, userlocationLong)
 
         increaseButton = view.findViewById(R.id.increaseButton)
         decreaseButton = view.findViewById(R.id.decreaseButton)
@@ -112,6 +115,8 @@ class BeeSightingUserInput : Fragment() {
         newPhotoPath = savedInstanceState?.getString(NEW_PHOTO_PATH_KEY)
         // where the photo in cameraButton is stored on the device
         visibleImagePath = savedInstanceState?.getString(VISIBLE_IMAGE_PATH_KEY)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         cameraButton.setOnClickListener {
             takePicture()
@@ -133,8 +138,7 @@ class BeeSightingUserInput : Fragment() {
 
 
         getLocationButton.setOnClickListener {
-            parentFragmentManager.beginTransaction().replace(R.id.bee_fragment_container, GetLocation.newInstance(), "GETLOCATION").commit()
-
+            fetchUserLocation()
         }
 
 
@@ -145,8 +149,8 @@ class BeeSightingUserInput : Fragment() {
                 sightingID = UUID.randomUUID(),
                 numberBees = beeUserSightingNumInput,
                 dateSpotted = Date(),
-                location = newUserLocation,
-                imageRef = 0
+                location = userLocation,
+                imageRef = imageFilename
 
             )
             beeViewModel.addBee(bee)
@@ -187,8 +191,73 @@ class BeeSightingUserInput : Fragment() {
         outState.putString(VISIBLE_IMAGE_PATH_KEY, visibleImagePath)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            fetchUserLocation()
+        } else {
+            Toast.makeText(context, "Error: location needed for submission", Toast.LENGTH_SHORT).show()
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun fetchUserLocation() {
+        if (ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // create a LocationRequest Builder to request location every second
+            val locationRequest = LocationRequest.Builder(
+                Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                1000
+            ).setWaitForAccurateLocation(true)
+                .setMaxUpdateAgeMillis(5000)
+                .build()
+
+            Toast.makeText(context, "Getting location, please wait...", Toast.LENGTH_SHORT).show()
+
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).addOnSuccessListener { location ->
+                if (location != null) {
+                    // if it has something accurate cached, we can just use that
+                    userLocation = GeoPoint(location.latitude, location.longitude)
+                    Log.d(TAG, "Lat ${userLocation?.latitude}, long ${userLocation?.longitude}")
+                    Toast.makeText(context, "Location loaded", Toast.LENGTH_SHORT).show()
+                } else {
+                    // if current location is null, we'll use the request we built earlier
+                    fusedLocationClient.requestLocationUpdates(
+                        locationRequest,
+                        object: LocationCallback() {
+                            override fun onLocationResult(locationResult: LocationResult) {
+                                // stop updating location when we have it
+                                fusedLocationClient.removeLocationUpdates(this)
+                                val updatedLocation = locationResult.lastLocation
+                                if (updatedLocation != null) {
+                                    userLocation = GeoPoint(updatedLocation.latitude, updatedLocation.longitude)
+                                } else {
+                                    Toast.makeText(context, "Error loading location.", Toast.LENGTH_SHORT).show()
+                                }
+                                Log.d(TAG, "Lat ${userLocation?.latitude}, long ${userLocation?.longitude}")
+                                super.onLocationResult(locationResult)
+                            }
+                        },
+                        // location is pulled asynchronously. providing a Looper (the main thread) ensures
+                        // that the callback (which sets userLocation if lat and long are null the first try) will
+                        // only run when lat and long are not null
+                        Looper.getMainLooper()
+                    )
+                }
+            }
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        }
+    }
+
     private fun takePicture() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE)
         val (photoFile, photoFilePath) = createImageFile()
 
         if (photoFile != null) {
