@@ -11,6 +11,6 @@ data class Bee(val sightingID: UUID? = randomUUID(),
                val numberBees: Int? = null,
                val location: GeoPoint? = null,
                val dateSpotted: Date? = null,
-               val imageRef: Int? = null, // placeholder for {imageRef}
+               val imageRef: String? = null, // placeholder for {imageRef}
                @get:Exclude @set:Exclude var documentReference: DocumentReference? = null
 )

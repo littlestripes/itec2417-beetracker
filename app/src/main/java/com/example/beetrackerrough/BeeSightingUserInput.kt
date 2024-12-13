@@ -150,7 +150,7 @@ class BeeSightingUserInput : Fragment() {
                 numberBees = beeUserSightingNumInput,
                 dateSpotted = Date(),
                 location = userLocation,
-                imageRef = 0
+                imageRef = imageFilename
 
             )
             beeViewModel.addBee(bee)
@@ -257,7 +257,7 @@ class BeeSightingUserInput : Fragment() {
     }
 
     private fun takePicture() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE)
         val (photoFile, photoFilePath) = createImageFile()
 
         if (photoFile != null) {
